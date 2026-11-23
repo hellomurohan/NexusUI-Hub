@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusUI Hub</title>
+    <link rel="icon" type="png" href="nexusui-bg.jpg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #08090c;
+            color: #ffffff;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* Desktop Bottom Floating Navbar */
+        .navbar {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 24px;
+            width: auto;
+            min-width: 380px;
+            
+            /* Glassmorphism Effect */
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(18px) saturate(180%);
+            -webkit-backdrop-filter: blur(18px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .logo { 
+            font-size: 19px; 
+            font-weight: 700; 
+            letter-spacing: 0.5px;
+        }
+        .logo span { color: #0078d4; }
+
+        .nav-links { 
+            display: flex; 
+            list-style: none; 
+            align-items: center; 
+            gap: 10px;
+        }
+
+        .nav-links li a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            padding: 7px 14px;
+            border-radius: 20px;
+            transition: 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-links li a:hover { 
+            color: #ffffff; 
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        /* Mobile Hamburger Icon (Hidden on Desktop) */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 26px;
+            height: 18px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .menu-toggle span {
+            width: 100%;
+            height: 2.5px;
+            background-color: #ffffff;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* Responsive Navbar for Mobile / Small Screens */
+        @media (max-width: 768px) {
+            .navbar {
+                bottom: auto;
+                top: 0;
+                left: 0;
+                transform: none;
+                width: 100%;
+                min-width: 100%;
+                border-radius: 0 0 16px 16px;
+                padding: 15px 6%;
+                border-left: none;
+                border-right: none;
+                border-top: none;
+                background: rgba(12, 13, 16, 0.75);
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                flex-direction: column;
+                background: rgba(16, 18, 23, 0.88);
+                backdrop-filter: blur(22px);
+                -webkit-backdrop-filter: blur(22px);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+                border-radius: 0 0 20px 20px;
+                padding: 15px 0;
+                gap: 10px;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-10px);
+                transition: all 0.3s ease;
+                box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            }
+
+            .nav-links.active {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            .nav-links li {
+                width: 90%;
+                text-align: center;
+            }
+
+            .nav-links li a {
+                display: block;
+                padding: 10px;
+                width: 100%;
+                font-size: 15px;
+            }
+
+            /* Hamburger Animation */
+            .menu-toggle.active span:nth-child(1) {
+                transform: translateY(8px) rotate(45deg);
+            }
+            .menu-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+            .menu-toggle.active span:nth-child(3) {
+                transform: translateY(-7.5px) rotate(-45deg);
+            }
+        }
+
+        /* Hero Sections */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 90px 20px 60px 20px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.62);
+            z-index: 1;
+        }
+
+        /* Glassmorphic Card */
+        .glass-card {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 850px;
+            padding: clamp(25px, 5vw, 45px);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        #home { background-image: url('home-page-bg.jpg'); }
+        #youtube { background-image: url('nexusui-bg.jpg'); }
+
+        .glass-card h1, .glass-card h2 { 
+            font-size: clamp(24px, 5vw, 40px); 
+            margin-bottom: 15px; 
+            color: #ffffff; 
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            line-height: 1.25;
+        }
+        
+        .glass-card p { 
+            font-size: clamp(14px, 2.5vw, 17px); 
+            color: #ddd; 
+            margin-bottom: 25px; 
+            line-height: 1.6; 
+        }
+
+        /* Resources Section */
+        .resources-section {
+            min-height: 100vh;
+            padding: 100px 5% 120px 5%;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .section-title { 
+            text-align: center; 
+            font-size: clamp(24px, 4vw, 34px); 
+            margin-bottom: 40px; 
+            color: #fff; 
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* Glassmorphism Responsive Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover { 
+            transform: translateY(-6px); 
+            border-color: rgba(0, 120, 212, 0.6);
+            box-shadow: 0 12px 35px rgba(0, 120, 212, 0.25);
+        }
+
+        /* Responsive Responsive Image Styling */
+        .card-img-wrapper {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-img { 
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover .card-img {
+            transform: scale(1.05);
+        }
+
+        .card-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-body h3 { font-size: 19px; margin-bottom: 10px; color: #fff; }
+        .card-body p { font-size: 13.5px; color: #aaa; margin-bottom: 20px; flex-grow: 1; line-height: 1.5; }
+
+        /* Button Styling */
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn {
+            padding: 9px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 12px;
+            text-align: center;
+            transition: 0.3s ease;
+            display: inline-block;
+            cursor: pointer;
+            border: none;
+            flex: 1 1 auto;
+        }
+
+        .primary-btn { background: rgba(0, 120, 212, 0.85); color: #fff; }
+        .primary-btn:hover { background: #005a9e; }
+
+        .guide-btn { 
+            background: rgba(255, 255, 255, 0.1); 
+            color: #ffffff; 
+            border: 1px solid rgba(255,255,255,0.2); 
+        }
+        .guide-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .video-btn { background: rgba(229, 9, 20, 0.85); color: #fff; }
+        .video-btn:hover { background: #b20710; }
+
+        .youtube-btn { 
+            background: #ff0000; 
+            color: #fff; 
+            font-size: 14px; 
+            padding: 12px 24px; 
+            border-radius: 25px; 
+        }
+        .youtube-btn:hover { background: #cc0000; }
+
+        /* Modal Glass Popup Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.78);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .modal.show {
+            display: flex !important;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        .modal.hide {
+            animation: fadeOut 0.3s forwards;
+        }
+
+        .modal-content {
+            background: rgba(22, 24, 29, 0.88);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 25px 20px;
+            border-radius: 20px;
+            max-width: 550px;
+            width: 100%;
+            position: relative;
+            color: #ddd;
+            line-height: 1.6;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal.show .modal-content { animation: scaleUp 0.3s forwards; }
+        .modal.hide .modal-content { animation: scaleDown 0.3s forwards; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        @keyframes scaleUp { from { transform: scale(0.88); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes scaleDown { from { transform: scale(1); opacity: 1; } to { transform: scale(0.88); opacity: 0; } }
+
+        .modal-content h3 { color: #0078d4; margin-bottom: 15px; font-size: 20px; padding-right: 25px; }
+        .modal-content ol { margin-left: 18px; margin-bottom: 18px; }
+        .modal-content li { margin-bottom: 10px; font-size: 13.5px; }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px; right: 18px;
+            font-size: 22px;
+            color: #aaa;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+        .close-btn:hover { color: #e50914; }
+
+        .video-note {
+            margin-top: 15px;
+            padding: 10px 14px;
+            background: rgba(0, 120, 212, 0.15);
+            border-left: 4px solid #0078d4;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #e0e0e0;
+        }
+
+        @media (max-width: 480px) {
+            .btn-group { flex-direction: column; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Responsive Adaptive Glass Navbar -->
+    <nav class="navbar">
+        <div class="logo">Nexus<span>UI</span></div>
+        
+        <!-- Mobile Menu Toggle Button -->
+        <div class="menu-toggle" id="mobileMenuBtn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#home" onclick="closeMobileMenu()">Home</a></li>
+            <li><a href="#youtube" onclick="closeMobileMenu()">YouTube</a></li>
+            <li><a href="#resources" onclick="closeMobileMenu()">Resources</a></li>
+        </ul>
+    </nav>
+
+    <!-- SECTION 1: Home Section -->
+    <section id="home" class="hero-section">
+        <div class="overlay"></div>
+        <div class="glass-card">
+            <h1>Welcome to NexusUI Hub</h1>
+            <p>Your ultimate platform for official operating system downloads, customization guides, and technical tutorials.</p>
+            <a href="#resources" class="btn primary-btn" style="padding: 12px 24px; font-size: 14px; border-radius: 20px;">Browse Downloads</a>
+        </div>
+    </section>
+
+    <!-- SECTION 2: YouTube Channel Section -->
+    <section id="youtube" class="hero-section">
+        <div class="overlay"></div>
+        <div class="glass-card">
+            <h2>NexusUI YouTube Channel</h2>
+            <p>Subscribe to watch Windows 11 customizations, Rainmeter themes, Windhawk modules, and step-by-step setup guides.</p>
+            <a href="YOUR_YOUTUBE_CHANNEL_LINK" target="_blank" class="btn youtube-btn">Subscribe Channel</a>
+        </div>
+    </section>
+
+    <!-- SECTION 3: Resources Section -->
+    <section id="resources" class="resources-section">
+        <h2 class="section-title">Official Resources</h2>
+        
+        <div class="card-grid">
+            
+            <!-- Card 1: Windows 11 -->
+            <div class="card">
+                <div class="card-img-wrapper">
+                    <img src="winodws-11-bg.jpg" alt="Windows 11" class="card-img">
+                </div>
+                <div class="card-body">
+                    <h3>Official Windows 11</h3>
+                    <p>Official Windows 11 Operating System — modern interface and performance tweaks.</p>
+                    <div class="btn-group">
+                        <a href="https://www.microsoft.com/software-download/windows11" target="_blank" class="btn primary-btn">Download Windows 11</a>
+                        <button onclick="showGuide('win11')" class="btn guide-btn">Install Guide</button>
+                        <a href="https://youtube.com/playlist?list=PLyCYgqMPZB2i8lvXWu_5AR9if7_k7iVHN&si=gKtCUqaHTled0_hy" target="_blank" class="btn video-btn">Watch Video</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Kali Linux -->
+            <div class="card">
+                <div class="card-img-wrapper">
+                    <img src="kali-linux-bg.jpg" alt="Kali Linux" class="card-img">
+                </div>
+                <div class="card-body">
+                    <h3>Kali Linux Official</h3>
+                    <p>Penetration Testing & Cybersecurity OS — essential tools for ethical hacking.</p>
+                    <div class="btn-group">
+                        <a href="https://www.kali.org/get-kali/" target="_blank" class="btn primary-btn">Download Kali Linux</a>
+                        <button onclick="showGuide('kali')" class="btn guide-btn">Install Guide</button>
+                        <a href="https://youtube.com/playlist?list=PLLeerfLVt_tA&si=qIwOne6WyMBlAxqE" target="_blank" class="btn video-btn">Watch Video</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Hiren's BootCD PE -->
+             <del>
+            <!-- <div class="card">
+                <div class="card-img-wrapper">
+                    <img src="hirens-bg.jpg" alt="Hiren's BootCD" class="card-img">
+                </div>
+                <div class="card-body">
+                    <h3>Hiren's BootCD PE</h3>
+                    <p>System Rescue & Repair Toolkit — Windows PE environment for diagnostics and recovery.</p>
+                    <div class="btn-group">
+                        <a href="https://www.hirensbootcd.org/download/" target="_blank" class="btn primary-btn">Download Hiren's PE</a>
+                        <button onclick="showGuide('hirens')" class="btn guide-btn">Install Guide</button>
+                        <a href="YOUR_HIRENS_VIDEO_LINK" target="_blank" class="btn video-btn">Watch Video</a>
+                    </div>
+                </div>
+            </div> -->
+             </del>
+        </div>
+    </section>
+
+    <!-- Modal Box for Install Guides -->
+    <div id="guideModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeGuide()">&times;</span>
+            <div id="modalText"></div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile Navigation Toggle Logic
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenuBtn.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        function closeMobileMenu() {
+            mobileMenuBtn.classList.remove('active');
+            navLinks.classList.remove('active');
+        }
+
+        // Install Guide Modal Logic
+        function showGuide(type) {
+            const modal = document.getElementById('guideModal');
+            const modalText = document.getElementById('modalText');
+
+            let title = '';
+            let steps = '';
+
+            if (type === 'win11') {
+                title = 'Windows 11 OS Setup Guide';
+                steps = `
+                    <ol>
+                        <li><b>ISO Download:</b> Download the official Windows 11 ISO image file directly from Microsoft.</li>
+                        <li><b>Bootable USB:</b> Use Rufus utility to create a bootable USB flash drive (8GB+ size with GPT/UEFI scheme).</li>
+                        <li><b>Boot Options:</b> Restart your PC and repeatedly press the Boot Key (F12, F11, or F8) to select the USB drive.</li>
+                        <li><b>Installation Process:</b> Follow the on-screen instructions, select your target disk partition, and proceed with the installation.</li>
+                    </ol>
+                `;
+            } else if (type === 'kali') {
+                title = 'Kali Linux Cybersecurity OS Setup Guide';
+                steps = `
+                    <ol>
+                        <li><b>ISO Download:</b> Download the standard Installer ISO image from the official Kali Linux website.</li>
+                        <li><b>Bootable USB:</b> Flash the ISO file to your USB drive using BalenaEtcher or Rufus.</li>
+                        <li><b>Boot & Install:</b> Boot from the USB drive and select the <b>Graphical Install</b> mode from the menu.</li>
+                        <li><b>System Setup:</b> Configure your language, root user credentials, and partition layout to complete setup.</li>
+                    </ol>
+                `;
+            } else if (type === 'hirens') {
+                title = "Hiren's BootCD PE System Rescue Guide";
+                steps = `
+                    <ol>
+                        <li><b>ISO Download:</b> Download the latest PE ISO image from the official Hiren's BootCD PE website.</li>
+                        <li><b>Bootable USB:</b> Create a bootable recovery drive using Rufus or ISO2USB tool.</li>
+                        <li><b>Boot Environment:</b> Plug the USB into the target computer and boot directly into the Windows PE environment.</li>
+                        <li><b>Recovery Utilities:</b> Access built-in tools for password resets, data recovery, and system troubleshooting.</li>
+                    </ol>
+                `;
+            }
+
+            modalText.innerHTML = `
+                <h3>${title}</h3>
+                ${steps}
+                <div class="video-note">
+                    💡 <b>Prefer a visual walkthrough?</b> You can watch the full step-by-step video guide directly using the "Watch Video" button on the card.
+                </div>
+            `;
+
+            modal.classList.remove('hide');
+            modal.classList.add('show');
+        }
+
+        function closeGuide() {
+            const modal = document.getElementById('guideModal');
+            modal.classList.remove('show');
+            modal.classList.add('hide');
+
+            setTimeout(() => {
+                modal.classList.remove('hide');
+                modal.style.display = 'none';
+            }, 280);
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('guideModal');
+            if (event.target === modal) {
+                closeGuide();
+            }
+        };
+    </script>
+
+</body>
+</html>
